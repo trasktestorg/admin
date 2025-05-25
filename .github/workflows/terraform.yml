@@ -42,12 +42,13 @@ jobs:
           OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
           OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
           OCI_region: ${{ secrets.OCI_REGION }}
-          GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          TF_VARS_admin_app_private_key: ${{ secrets.ADMIN_APP_PRIVATE_KEY }}
         continue-on-error: true
         run: |
           echo '```\n' > plan.txt
           terraform -version -no-color 2>&1 | tee -a plan.txt
-          terraform apply -auto-approve -no-color 2>&1 | tee -a plan.txt
+          terraform plan -no-color 2>&1 | tee -a plan.txt
+#          terraform apply -auto-approve -no-color 2>&1 | tee -a plan.txt
           echo '```' >> plan.txt
 
       - name: Add comment on PR

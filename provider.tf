@@ -1,5 +1,10 @@
 provider "github" {
   owner = "trasktestorg"
+  app_auth {
+    id              = "1306134"
+    installation_id = "68340749"
+    pem_file        = var.admin_app_private_key
+  }
 }
 
 terraform {
