@@ -32,10 +32,13 @@ jobs:
           OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
           OCI_region: ${{ secrets.OCI_REGION }}
 
-      - id: plan
+      - run: terraform plan -no-color 2>&1 | tee plan.txt
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: terraform plan -no-color 2>&1 | tee plan.txt
+          OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
+          OCI_region: ${{ secrets.OCI_REGION }}
         continue-on-error: true
 
       - name: Add comment on PR
