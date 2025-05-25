@@ -46,6 +46,7 @@ jobs:
         continue-on-error: true
         run: |
           echo '```\n' > plan.txt
+          terraform -version -no-color 2>&1 | tee -a plan.txt
           terraform plan -no-color 2>&1 | tee -a plan.txt
           echo '```' >> plan.txt
 
