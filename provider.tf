@@ -19,3 +19,8 @@ terraform {
     namespace = "axtwf1hkrwcy"
   }
 }
+
+variable "admin_app_private_key" {
+  type        = string
+  sensitive   = true
+}
