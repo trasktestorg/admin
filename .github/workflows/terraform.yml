@@ -45,10 +45,10 @@ jobs:
           TF_VAR_admin_app_private_key: ${{ secrets.ADMIN_APP_PRIVATE_KEY }}
         continue-on-error: true
         run: |
-          echo '```\n' > plan.txt
-          terraform -version -no-color 2>&1 | tee -a plan.txt
           terraform plan -no-color 2>&1 | tee -a plan.txt
-          terraform apply -auto-approve -no-color 2>&1 | tee -a plan.txt
+          awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt > trimmed_plan.txt
+          echo '```' > plan.txt
+          cat trimmed_plan.txt >> plan.txt
           echo '```' >> plan.txt
 
       - name: Add comment on PR
