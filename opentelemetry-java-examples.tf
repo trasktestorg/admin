@@ -3,6 +3,7 @@ resource "github_repository" "opentelemetry-java-examples" {
   visibility         = "public"
   allow_merge_commit = false
   allow_rebase_merge = false
+  allow_squash_merge = true
   has_issues         = true
 }
 
