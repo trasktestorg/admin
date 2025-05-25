@@ -39,6 +39,7 @@ jobs:
           OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
           OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
           OCI_region: ${{ secrets.OCI_REGION }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         continue-on-error: true
 
       - name: Add comment on PR
