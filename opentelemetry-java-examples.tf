@@ -4,7 +4,7 @@ resource "github_repository" "opentelemetry-java-examples" {
   allow_merge_commit = false
   allow_rebase_merge = false
   allow_squash_merge = true
-  has_issues         = true
+  has_issues         = false
 }
 
 resource "github_branch_protection" "opentelemetry-java-examples-main" {
