@@ -24,15 +24,16 @@ jobs:
         run: |
           echo "${{ secrets.OCI_PRIVATE_KEY }}" > ${{ runner.temp }}/oci_api_key.pem
 
-      - run: terraform init
+      - name: Terraform init
         env:
           OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
           OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
           OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
           OCI_region: ${{ secrets.OCI_REGION }}
+        run: terraform init
 
-      - run: terraform plan -no-color 2>&1 | tee plan.txt
+      - name: Terraform plan
         env:
           OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
@@ -41,6 +42,10 @@ jobs:
           OCI_region: ${{ secrets.OCI_REGION }}
           GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         continue-on-error: true
+        run: |
+          echo '```\n' > plan.txt
+          terraform plan -no-color 2>&1 | tee -a plan.txt
+          echo '```' >> plan.txt
 
       - name: Add comment on PR
         env:
