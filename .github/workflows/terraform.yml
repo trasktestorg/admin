@@ -47,7 +47,7 @@ jobs:
         run: |
           echo '```\n' > plan.txt
           terraform -version -no-color 2>&1 | tee -a plan.txt
-          terraform plan -no-color 2>&1 | tee -a plan.txt
+          terraform apply -auto-approve -no-color 2>&1 | tee -a plan.txt
           echo '```' >> plan.txt
 
       - name: Add comment on PR
