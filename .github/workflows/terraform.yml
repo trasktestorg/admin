@@ -46,14 +46,15 @@ jobs:
         continue-on-error: true
         run: |
           terraform plan -no-color 2>&1 | tee -a plan.txt
+          echo '```' > body.txt
           if grep -q "^Terraform will perform" plan.txt; then
-            awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt > trimmed_plan.txt
-            echo '```' > plan.txt
-            cat trimmed_plan.txt >> plan.txt
-            echo '```' >> plan.txt
+            awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt >> body.txt
+          else
+            cat plan.txt >> body.txt
           fi
+          echo '```' > body.txt
 
       - name: Add comment on PR
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh pr comment ${{ github.event.pull_request.number }} --body-file plan.txt
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file body.txt
