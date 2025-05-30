@@ -35,7 +35,8 @@ jobs:
           OCI_region: ${{ secrets.OCI_REGION }}
         run: terraform init
 
-      - name: Terraform plan
+      - id: terraform-plan
+        name: Terraform plan
         env:
           OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
@@ -58,3 +59,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr comment ${{ github.event.pull_request.number }} --body-file body.txt
+
+      - name: Fail if Terraform plan failed
+        if: steps.terraform-plan.outcome == 'failure'
+        run: exit 1
