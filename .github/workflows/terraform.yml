@@ -46,10 +46,12 @@ jobs:
         continue-on-error: true
         run: |
           terraform plan -no-color 2>&1 | tee -a plan.txt
-          awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt > trimmed_plan.txt
-          echo '```' > plan.txt
-          cat trimmed_plan.txt >> plan.txt
-          echo '```' >> plan.txt
+          if grep -q "^Terraform will perform" plan.txt; then
+            awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt > trimmed_plan.txt
+            echo '```' > plan.txt
+            cat trimmed_plan.txt >> plan.txt
+            echo '```' >> plan.txt
+          fi
 
       - name: Add comment on PR
         env:
