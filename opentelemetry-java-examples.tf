@@ -4,6 +4,10 @@ resource "github_repository" "opentelemetry-java-examples" {
   allow_merge_commit = false
   allow_rebase_merge = false
   has_issues         = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "github_branch_protection" "opentelemetry-java-examples-main" {
