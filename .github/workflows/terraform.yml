@@ -52,9 +52,9 @@ jobs:
         run: |
           echo '```' > body.txt
           if grep -q "^Terraform will perform" plan.txt; then
-          awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt >> body.txt
+            awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt >> body.txt
           else
-          cat plan.txt >> body.txt
+            cat plan.txt >> body.txt
           fi
           echo '```' >> body.txt
 
