@@ -45,14 +45,14 @@ jobs:
           TF_VAR_admin_app_private_key: ${{ secrets.ADMIN_APP_PRIVATE_KEY }}
         continue-on-error: true
         run: |
-          terraform plan -no-color 2>&1 | tee -a plan.txt
+          terraform plan -no-color 2>&1 | tee plan.txt
           echo '```' > body.txt
           if grep -q "^Terraform will perform" plan.txt; then
             awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt >> body.txt
           else
             cat plan.txt >> body.txt
           fi
-          echo '```' > body.txt
+          echo '```' >> body.txt
 
       - name: Add comment on PR
         env:
