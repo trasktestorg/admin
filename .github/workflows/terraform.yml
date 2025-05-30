@@ -35,8 +35,7 @@ jobs:
           OCI_region: ${{ secrets.OCI_REGION }}
         run: terraform init
 
-      - id: terraform-plan
-        name: Terraform plan
+      - name: Terraform plan
         env:
           OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
@@ -48,7 +47,6 @@ jobs:
           terraform plan -no-color 2>&1 | tee plan.txt
 
       - name: Add comment on PR
-        if: success() || failure()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
