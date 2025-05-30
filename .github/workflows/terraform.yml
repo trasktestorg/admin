@@ -44,7 +44,7 @@ jobs:
           OCI_region: ${{ secrets.OCI_REGION }}
           TF_VAR_admin_app_private_key: ${{ secrets.ADMIN_APP_PRIVATE_KEY }}
         run: |
-          terraform plan -no-color 2>&1 | tee plan.txt
+          set -o pipefail && terraform plan -no-color 2>&1 | tee plan.txt
 
       - name: Add comment on PR
         env:
