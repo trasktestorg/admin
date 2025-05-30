@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+# ADMIN_APP_PRIVATE_KEY needs the following permissions:
+# - Admin read/write
+# -
+
 jobs:
   plan:
     runs-on: ubuntu-latest
