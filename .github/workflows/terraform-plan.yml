@@ -1,0 +1,61 @@
+name: Terraform plan
+on:
+  pull_request_target:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.1
+
+      - name: Create private key file
+        run: |
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ${{ runner.temp }}/oci_api_key.pem
+
+      - name: Terraform init
+        env:
+          OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
+          OCI_region: ${{ secrets.OCI_REGION }}
+        run: terraform init
+
+      - name: Terraform plan
+        env:
+          OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
+          OCI_region: ${{ secrets.OCI_REGION }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -o pipefail && terraform plan -no-color 2>&1 | tee plan.txt
+
+      - name: Add comment on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo '```' > body.txt
+          if grep -q "^Terraform will perform" plan.txt; then
+            awk '/^Terraform will perform/ {found=1} found && !done {print} /^Plan: / {done=1}' plan.txt >> body.txt
+          else
+            cat plan.txt >> body.txt
+          fi
+          echo '```' >> body.txt
+
+          gh pr comment ${{ github.event.pull_request.number }} --body-file body.txt

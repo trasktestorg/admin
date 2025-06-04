@@ -1,0 +1,42 @@
+name: Terraform apply
+on:
+  merge_group:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.1
+
+      - name: Create private key file
+        run: |
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ${{ runner.temp }}/oci_api_key.pem
+
+      - name: Terraform init
+        env:
+          OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
+          OCI_region: ${{ secrets.OCI_REGION }}
+        run: terraform init
+
+      - name: Terraform apply
+        env:
+          OCI_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          OCI_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_private_key_path: ${{ runner.temp }}/oci_api_key.pem
+          OCI_region: ${{ secrets.OCI_REGION }}
+          TF_VAR_admin_app_private_key: ${{ secrets.ADMIN_APP_PRIVATE_KEY }}
+        run: |
+          terraform apply -auto-approve -no-color
